@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap>
+    <!-- 通过typeAlias使得我们在下面使用User实体类的时候不需要写包名 -->
+    <typeAlias alias="User" type="com.antgrp.entity.User"/>
+    <!-- id表示select里的sql语句，resultClass表示返回结果的类型,并且格式化时间 -->
+    <select id="selectAllUser" resultClass="User">
+        select id,name,DATE_FORMAT(birth,'%Y-%m-%d %H:%i:%S') as birth,score,email from tbl_user
+    </select>
+    <select id="selectUserById" parameterClass="int" resultClass="User">
+    select id,name,DATE_FORMAT(birth,'%Y-%m-%d %H:%i:%S') as birth,score,email from tbl_user where id=#id#
+    </select>
+    <!-- 注意这里的resultClass类型，使用User类型取决于queryForList还是queryForObject -->
+    <select id="selectUserByName" parameterClass="String" resultClass="User">
+        select id,name,DATE_FORMAT(birth,'%Y-%m-%d %H:%i:%S') as birth,score,email from tbl_user where name like '%$name$%'
+    </select>
+    <insert id="addUser" parameterClass="User">
+        insert into tbl_user (name,birth,score,email) values (#name#,#birth#,#score#,#email#)
+        <selectKey resultClass="int" keyProperty="id">
+            select @@identity as inserted
+        </selectKey>
+    </insert>
+    <delete id="deleteUserById" parameterClass="int">
+        delete from tbl_user where id=#id#
+    </delete>
+    <update id="updateUser" parameterClass="User">
+        update tbl_user set name=#name#,birth=#birth#,score=#score# ,email=#email# where id=#id#
+    </update>
+</sqlMap>
